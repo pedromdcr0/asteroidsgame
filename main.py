@@ -1,14 +1,11 @@
 import pygame
 import sys
-import random
+
 import math
 from square import Square
 
-# Inicialização do Pygame
 pygame.init()
 
-
-# Configurações do jogo
 WIDTH, HEIGHT = 800, 600
 FPS = 60
 WHITE = (255, 255, 255)
@@ -16,15 +13,10 @@ RED = (255, 0, 0)
 
 player = Square(WIDTH, HEIGHT)
 
-# Configuração da tela
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Clique no Quadrado")
 clock = pygame.time.Clock()
 
-# Variáveis do jogo
-
-
-# Loop principal do jogo
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -47,8 +39,6 @@ while True:
     screen.fill(WHITE)
     pygame.draw.rect(screen, RED, (player.x, player.y, player.size, player.size))
 
-    # Atualizar a tela
     pygame.display.flip()
 
-    # Definir a taxa de quadros por segundo
     clock.tick(FPS)
