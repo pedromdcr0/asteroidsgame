@@ -18,17 +18,19 @@ pygame.display.set_caption("Clique no Quadrado")
 clock = pygame.time.Clock()
 
 while True:
+    pressing = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                player.projectiles.append((player.x, player.y, player.angle))
 
     keys = pygame.key.get_pressed()
-
-    player.angle += (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * player.speed
+    if keys[pygame.K_a]:
+        player.projectiles.append((player.x, player.y, player.angle))
+    if keys[pygame.K_RIGHT]:
+        player.rotation("right")
+    if keys[pygame.K_LEFT]:
+        player.rotation("left")
 
     for projectile in player.projectiles:
         projectile_x, projectile_y, projectile_angle = projectile
@@ -37,7 +39,8 @@ while True:
         pygame.draw.rect(screen, RED, (projectile_x, projectile_y, player.projectile_size, player.projectile_size))
 
     screen.fill(WHITE)
-    pygame.draw.rect(screen, RED, (player.x, player.y, player.size, player.size))
+
+    player.draw_rotated_square(screen, RED, player.x, player.y, player.angle)
 
     pygame.display.flip()
 
