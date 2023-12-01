@@ -5,7 +5,7 @@ import pygame
 
 class Targets:
     def __init__(self):
-        self.speed = 1
+        self.speed = 0.2
         self. cord_x = None
         self.cord_y = None
 
@@ -15,14 +15,14 @@ class Targets:
         for number in range(number):
             x = random.randint(-400, 1200)
             if x < 0 or x > 800:
-                self.cord_x = random.choice([-100, 900])
+                self.cord_x = random.choice([random.randint(-500, -100), random.randint(900, 1300)])
                 self.cord_y = random.randint(0, 600)
                 size = random.randint(15, 55)
                 self.targets.append([[self.cord_x, self.cord_y], size])
 
             elif 0 <= x <= 800:
                 self.cord_x = x
-                self.cord_y = random.choice([-100, 700])
+                self.cord_y = random.choice([random.randint(-250, -100), random.randint(700, 850)])
                 size = random.randint(15, 55)
                 self.targets.append([[self.cord_x, self.cord_y], size])
 

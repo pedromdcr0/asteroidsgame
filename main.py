@@ -57,7 +57,7 @@ while True:
         for target in targets.targets[:]:
             target_rect = pygame.Rect(*target[0], target[1], target[1])
             if check_collision(bullet_rect, target_rect):
-                # Se houver colisão, remove o projétil e o alvo
+
                 bullet.list.remove(projectile)
                 targets.targets.remove(target)
                 break
