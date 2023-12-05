@@ -32,7 +32,7 @@ class Targets:
         for target in self.targets:
             pygame.draw.rect(screen, color, (*target[0], target[1], target[1]))
 
-    def move_targets_to_center(self, center_x, center_y, target_speed):
+    def move_targets_through_center(self, center_x, center_y, target_speed):
         for target in self.targets:
             target_x, target_y = target[0]
             angle = math.atan2(center_y - target_y, center_x - target_x)

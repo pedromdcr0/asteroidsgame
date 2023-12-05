@@ -1,4 +1,3 @@
-import time
 import pygame
 import sys
 import math
@@ -19,8 +18,11 @@ bullet = Bullet()
 targets = Targets()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Clique no Quadrado")
+pygame.display.set_caption("Rogueroids")
 clock = pygame.time.Clock()
+
+score = 0
+game_active = True
 
 
 def check_collision(rect1, rect2):
@@ -28,18 +30,24 @@ def check_collision(rect1, rect2):
 
 
 while True:
-    pressing = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_a and game_active:
                 bullet.shoot(player.x, player.y, player.size, player.angle)
-            if event.key == pygame.K_x:
-                targets.randomize_position(10)
+            elif event.key == pygame.K_x:
+                if game_active:
+                    targets.randomize_position(10)
+                else:
+                    # Se o jogo estiver inativo (Game Over), reinicie o jogo
+                    game_active = True
+                    score = 0
+                    player.reset_position(WIDTH, HEIGHT)
+                    targets.reset_targets()
 
-    targets.move_targets_to_center(WIDTH // 2, HEIGHT // 2, targets.speed)
+    targets.move_targets_through_center(WIDTH // 2, HEIGHT // 2, targets.speed)
 
     keys = pygame.key.get_pressed()
 
@@ -47,6 +55,10 @@ while True:
         player.rotation("right")
     if keys[pygame.K_LEFT]:
         player.rotation("left")
+    if keys[pygame.K_UP]:
+        player.rotation("up")
+    if keys[pygame.K_DOWN]:
+        player.rotation("down")
 
     for projectile in bullet.list[:]:
         projectile[0] += bullet.speed * math.cos(math.radians(projectile[2]))
@@ -57,10 +69,12 @@ while True:
         for target in targets.targets[:]:
             target_rect = pygame.Rect(*target[0], target[1], target[1])
             if check_collision(bullet_rect, target_rect):
-
                 bullet.list.remove(projectile)
                 targets.targets.remove(target)
-                break
+                score += target[1]  # Adiciona ao score de acordo com o tamanho do target
+                if target[0][0] == WIDTH // 2 and target[0][1] == HEIGHT // 2:
+                    # Se o target atingiu o centro, Game Over
+                    game_active = False
 
     screen.fill(BLACK)
 
@@ -71,6 +85,18 @@ while True:
         targets.create(screen, WHITE)
 
     player.draw_rotated_square(screen, WHITE, player.x, player.y, player.angle)
+
+    if not game_active:
+        # Se for Game Over, exiba a tela de Game Over
+        font = pygame.font.Font(None, 74)
+        text = font.render("Game Over", True, RED)
+        screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 4))
+
+        score_text = font.render(f"Score: {score}", True, WHITE)
+        screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, HEIGHT // 2))
+
+        restart_text = font.render("Pressione X para jogar novamente", True, WHITE)
+        screen.blit(restart_text, (WIDTH // 2 - restart_text.get_width() // 2, 3 * HEIGHT // 4))
 
     pygame.display.flip()
 
