@@ -22,7 +22,8 @@ pygame.display.set_caption("Rogueroids")
 clock = pygame.time.Clock()
 
 score = 0
-game_active = True
+number_of_targets = 3
+game_active = False
 
 
 def check_collision(rect1, rect2):
@@ -39,13 +40,11 @@ while True:
                 bullet.shoot(player.x, player.y, player.size, player.angle)
             elif event.key == pygame.K_x:
                 if game_active:
-                    targets.randomize_position(10)
+                    targets.randomize_position(round(number_of_targets))
                 else:
                     # Se o jogo estiver inativo (Game Over), reinicie o jogo
                     game_active = True
                     score = 0
-                    player.reset_position(WIDTH, HEIGHT)
-                    targets.reset_targets()
 
     targets.move_targets_through_center(WIDTH // 2, HEIGHT // 2, targets.speed)
 
@@ -60,21 +59,17 @@ while True:
     if keys[pygame.K_DOWN]:
         player.rotation("down")
 
-    for projectile in bullet.list[:]:
+    for projectile in bullet.list:
         projectile[0] += bullet.speed * math.cos(math.radians(projectile[2]))
         projectile[1] += bullet.speed * math.sin(math.radians(projectile[2]))
 
         bullet_rect = pygame.Rect(projectile[0], projectile[1], bullet.size, bullet.size)
 
-        for target in targets.targets[:]:
-            target_rect = pygame.Rect(*target[0], target[1], target[1])
+        for target in targets.targets:
+            target_rect = pygame.Rect(*target[0], target[1]["size"], target[1]["size"])
             if check_collision(bullet_rect, target_rect):
-                bullet.list.remove(projectile)
-                targets.targets.remove(target)
-                score += target[1]  # Adiciona ao score de acordo com o tamanho do target
-                if target[0][0] == WIDTH // 2 and target[0][1] == HEIGHT // 2:
-                    # Se o target atingiu o centro, Game Over
-                    game_active = False
+                bullet.collided(projectile)
+                targets.shooted(bullet, target)
 
     screen.fill(BLACK)
 

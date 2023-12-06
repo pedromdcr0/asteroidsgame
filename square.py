@@ -7,8 +7,8 @@ class Square:
         self.size = 10
         self.angle = 0
         self.speed = 1
-        self.x = (width // 2) - self.size
-        self.y = (height // 2) - self.size
+        self.x = (width // 2)  # - (self.size // 2)
+        self.y = (height // 2)  # - (self.size // 2)
         self.projectile_size = 3
         self.projectile_speed = 10
         self.projectiles = []
