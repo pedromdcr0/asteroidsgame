@@ -1,0 +1,18 @@
+[
+  {
+    "name": "power",
+    "strength": 1
+  },
+  {
+    "name": "shield",
+    "strength": 2
+  },
+  {
+    "name": "speed",
+    "strength": 3
+  },
+  {
+    "name": "test",
+    "strength": 4
+  }
+]

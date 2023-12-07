@@ -1,3 +1,6 @@
+import json
+import random
+
 import pygame
 import sys
 
@@ -19,13 +22,20 @@ class PowerUps:
 
     def choose(self, screen, width, height):
         self.menu = True
+        text = None
+        options = []
+        with open("powerups.json", "r") as powerups_file:
+            powerups_data = json.load(powerups_file)
+            for powerup in powerups_data:
+                options.append(powerup)
 
-        for i, text in enumerate(self.option_texts):
+        player_options = [random.sample(options, 3)]
+
+        for i, content in player_options:
             if i == self.selected_option:
                 self.color = WHITE
                 self.font_size = 35
-            else:
-                pass
+
             screen.blit(text, (width // 2 - text.get_width() // 2, height // 4 + i * 50))
 
     def handle_input(self, key_event):
