@@ -9,9 +9,6 @@ class Square:
         self.speed = 1
         self.x = (width // 2)  # - (self.size // 2)
         self.y = (height // 2)  # - (self.size // 2)
-        self.projectile_size = 3
-        self.projectile_speed = 10
-        self.projectiles = []
 
     def rotation(self, rl):
         if rl == "right":

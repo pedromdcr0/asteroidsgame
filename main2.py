@@ -4,6 +4,7 @@ import math
 from bullet import Bullet
 from square import Square
 from targets import Targets
+from power_ups import PowerUps
 
 pygame.init()
 
@@ -14,6 +15,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 player = Square(WIDTH, HEIGHT)
+power_ups = PowerUps()
 bullet = Bullet()
 targets = Targets()
 
@@ -22,10 +24,11 @@ pygame.display.set_caption("Rogueroids")
 clock = pygame.time.Clock()
 
 score = 0
-game_active = True
+game_active = False
 game_is_on = True
 level_completed = 0
-level = 1
+level = 0
+current_time = pygame.time.get_ticks()
 
 
 def check_collision(rect1, rect2):
@@ -33,6 +36,8 @@ def check_collision(rect1, rect2):
 
 
 def increase_level(level_number):
+    global level
+    level += 1
     level_multiply = level_number / 1.3
     life_multiply = level_number % 10
     if level_number < 10:
@@ -40,46 +45,103 @@ def increase_level(level_number):
     else:
         target_multiply = 1.125
 
-    targets.speed *= (1.2 * level_multiply)
+    if level > 1:
+        targets.speed *= (1.2 * level_multiply)
+    elif level >= 0:
+        targets.speed = targets.speed
     for target_type in targets.sizelife:
-        target_type["life"] *= int(f"1.0{life_multiply}")
+        target_type["life"] *= float(f"1.0{life_multiply}")
 
     targets.number_of_targets *= target_multiply
 
 
 while game_is_on:
+    screen.fill(BLACK)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and not game_active:
+                if level == 0:
+                    increase_level(level)
+                    game_active = True
+            # if event.key == pygame.K_SPACE and game_active:
+            #     bullet.shoot(player.x, player.y, player.size, player.angle)
+            #     print(targets.targets)
+            #     print(len(targets.shooted_targets))
+            #     print(targets.number_of_targets_final)
+            #     print(level_completed)
+            #     print(targets.created_targets)
 
-    if level_completed == 1:
-        level += 1
-        increase_level(level)
-        level_completed = 0
+    if not game_active:
+        if level == 0:
+            font = pygame.font.Font("font.ttf", 20)
+            text = font.render("Rogueroids", True, WHITE)
+            screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 4))
 
-    if game_active and level_completed == 0 and len(targets.targets) == 0:
-        level_completed = 1
+            score_text = font.render(f"High Score: {score}", True, WHITE)
+            screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, HEIGHT // 2))
 
-    keys = pygame.key.get_pressed()
+            restart_text = font.render("Pressione SPACE para jogar", True, WHITE)
+            screen.blit(restart_text, (WIDTH // 2 - restart_text.get_width() // 2, 3 * HEIGHT // 4))
 
-    if keys[pygame.K_RIGHT]:
-        player.rotation("right")
-    if keys[pygame.K_LEFT]:
-        player.rotation("left")
-    if keys[pygame.K_UP]:
-        player.rotation("up")
-    if keys[pygame.K_DOWN]:
-        player.rotation("down")
+        if level_completed == 1:
+            increase_level(level)
+            power_ups.choose(screen, WIDTH, HEIGHT)
+            if power_ups.menu:
+                for event in pygame.event.get():
+                    power_ups.handle_input(event)
 
-    for projectile in bullet.list[:]:
-        projectile[0] += bullet.speed * math.cos(math.radians(projectile[2]))
-        projectile[1] += bullet.speed * math.sin(math.radians(projectile[2]))
+    if game_active:
+        player.draw_rotated_square(screen, WHITE, player.x, player.y, player.angle)
+        targets.move_targets_through_center(WIDTH // 2, HEIGHT // 2, targets.speed)
 
-        bullet_rect = pygame.Rect(projectile[0], projectile[1], bullet.size, bullet.size)
+        if level_completed == 1:
+            game_active = False
+
+        if not targets.created_targets and level_completed == 0:
+            targets.randomize_position(targets.number_of_targets_final, level_completed)
+
+        if len(targets.shooted_targets) == targets.number_of_targets_final:
+            game_active = False
+            level_completed = 1
+            print(str(game_active) + "gameactive")
+            print(str(level_completed) + "levelcompleted")
+
+        # if targets.created_targets:
+        #     pass
+
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_RIGHT]:
+            player.rotation("right")
+        if keys[pygame.K_LEFT]:
+            player.rotation("left")
+        if keys[pygame.K_UP]:
+            player.rotation("up")
+        if keys[pygame.K_DOWN]:
+            player.rotation("down")
+        if keys[pygame.K_SPACE]:
+            bullet.shoot(player.x, player.y, player.size, player.angle)
+
+        for projectile in bullet.list:
+            projectile[0] += bullet.speed * math.cos(math.radians(projectile[2]))
+            projectile[1] += bullet.speed * math.sin(math.radians(projectile[2]))
+
+            bullet_rect = pygame.Rect(projectile[0], projectile[1], bullet.size, bullet.size)
+
+            for target in targets.targets:
+                target_rect = pygame.Rect(*target[0], target[1]["size"], target[1]["size"])
+                if check_collision(bullet_rect, target_rect):
+                    bullet.collided(projectile)
+                    targets.shooted(bullet, target)
+
+        for projectile in bullet.list:
+            pygame.draw.rect(screen, WHITE, (projectile[0], projectile[1], bullet.size, bullet.size))
 
         for target in targets.targets:
-            target_rect = pygame.Rect(*target[0], target[1]["size"], target[1]["size"])
-            if check_collision(bullet_rect, target_rect):
-                bullet.collided(projectile)
-                targets.shooted(bullet, target)
+            targets.create(screen, WHITE)
+
+    pygame.display.flip()
+    clock.tick(FPS)

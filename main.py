@@ -40,7 +40,7 @@ while True:
                 bullet.shoot(player.x, player.y, player.size, player.angle)
             elif event.key == pygame.K_x:
                 if game_active:
-                    targets.randomize_position(round(number_of_targets))
+                    targets.randomize_position(round(number_of_targets), 0)
                 else:
                     # Se o jogo estiver inativo (Game Over), reinicie o jogo
                     game_active = True
@@ -65,11 +65,22 @@ while True:
 
         bullet_rect = pygame.Rect(projectile[0], projectile[1], bullet.size, bullet.size)
 
+        #targets_to_remove = []  # Lista temporária para armazenar os projéteis a serem removidos
+
         for target in targets.targets:
             target_rect = pygame.Rect(*target[0], target[1]["size"], target[1]["size"])
             if check_collision(bullet_rect, target_rect):
                 bullet.collided(projectile)
                 targets.shooted(bullet, target)
+                #targets_to_remove.append(target)
+
+        # Remover os projéteis após o loop interno
+        # for projectile2 in targets_to_remove:
+        #     #print(projectile2)
+        #     if projectile2[1]["life"] <= 0:
+        #         #print(projectile2)
+        #         #print(targets_to_remove)
+        #         targets.targets.remove(projectile2)
 
     screen.fill(BLACK)
 
