@@ -66,13 +66,6 @@ while game_is_on:
                 if level == 0:
                     increase_level(level)
                     game_active = True
-            # if event.key == pygame.K_SPACE and game_active:
-            #     bullet.shoot(player.x, player.y, player.size, player.angle)
-            #     print(targets.targets)
-            #     print(len(targets.shooted_targets))
-            #     print(targets.number_of_targets_final)
-            #     print(level_completed)
-            #     print(targets.created_targets)
 
     if not game_active:
         if level == 0:
