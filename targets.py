@@ -6,7 +6,7 @@ import pygame
 
 class Targets:
     def __init__(self):
-        self.speed = 0.6
+        self.speed = 1
         self.cord_x = None
         self.cord_y = None
         self.number_of_targets = 1

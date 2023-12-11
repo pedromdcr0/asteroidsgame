@@ -28,6 +28,7 @@ game_active = False
 game_is_on = True
 level_completed = 0
 level = 0
+menu = False
 current_time = pygame.time.get_ticks()
 
 
@@ -79,12 +80,21 @@ while game_is_on:
             restart_text = font.render("Pressione SPACE para jogar", True, WHITE)
             screen.blit(restart_text, (WIDTH // 2 - restart_text.get_width() // 2, 3 * HEIGHT // 4))
 
-        if level_completed == 1:
-            increase_level(level)
-            power_ups.choose(screen, WIDTH, HEIGHT)
-            if power_ups.menu:
+        if level_completed == 1 and not menu:
+            menu = True
+            while menu:
+                power_ups.choose(screen, WIDTH, HEIGHT, menu)
+                increase_level(level)
                 for event in pygame.event.get():
-                    power_ups.handle_input(event)
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_UP:
+                            power_ups.handle_input("up")
+                        elif event.key == pygame.K_DOWN:
+                            power_ups.handle_input("down")
+                        elif event.key == pygame.K_x:
+                            power_ups.handle_input("x")
+                            level_completed = 0
+                            menu = False
 
     if game_active:
         player.draw_rotated_square(screen, WHITE, player.x, player.y, player.angle)
