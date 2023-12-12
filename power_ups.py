@@ -18,7 +18,7 @@ class PowerUps:
         self.menu = False
         self.powerup_chosed = False
 
-    def choose(self, screen, width, height, menu):
+    def choose(self, screen, width, height, menu, key_event):
         self.menu = True
         if menu and self.menu:
             options = []
@@ -33,34 +33,63 @@ class PowerUps:
                 player_options = random.sample(options, 3)
                 self.powerup_chosed = True
 
-            for index, text in enumerate(player_options):
-                print(index)
-                if index + 1 == self.selected_option:
-                    self.font_size = 50
-                    texto = self.font.render(text["name"], True, WHITE)
-                    screen.blit(texto, (width // 2 - texto.get_width() // 2, height // 2 + index * 50))
-                elif index + 1 != self.selected_option:
-                    self.color = RED
-                    self.font_size = 20
-                    texto = self.font.render(text["name"], True, self.color)
-                    screen.blit(texto, (width // 2 - texto.get_width() // 2, height // 2 + index * 50))
+            if key_event == "up":
+                if self.selected_option == 1:
+                    self.selected_option = 3
+                    print(self.selected_option)
+                else:
+                    self.selected_option -= 1
+                    print(self.selected_option)
+                for index, text in enumerate(player_options):
+                    print(index)
+                    if index + 1 == self.selected_option:
+                        self.font_size = 50
+                        texto = self.font.render(text["name"], True, WHITE)
+                        screen.blit(texto, (width // 2 - texto.get_width() // 2, height // 2 + index * 50))
+                    elif index + 1 != self.selected_option:
+                        self.color = RED
+                        self.font_size = 20
+                        texto = self.font.render(text["name"], True, self.color)
+                        screen.blit(texto, (width // 2 - texto.get_width() // 2, height // 2 + index * 50))
 
-    def handle_input(self, key_event):
-        if key_event == "up":
-            if self.selected_option == 1:
-                self.selected_option = 3
-                print(self.selected_option)
-            else:
-                self.selected_option -= 1
-                print(self.selected_option)
-        elif key_event == "down":
-            if self.selected_option == 3:
-                self.selected_option = 1
-                print(self.selected_option)
-            else:
-                self.selected_option += 1
-                print(self.selected_option)
-        elif key_event == "x":
-            # print(f"Opção selecionada: {self.options[self.selected_option]}")
-            self.menu = False  # Saia do menu depois de escolher
-            return False
+            elif key_event == "down":
+                if self.selected_option == 3:
+                    self.selected_option = 1
+                    print(self.selected_option)
+                else:
+                    self.selected_option += 1
+                    print(self.selected_option)
+                for index, text in enumerate(player_options):
+                    print(index)
+                    if index + 1 == self.selected_option:
+                        self.font_size = 50
+                        texto = self.font.render(text["name"], True, WHITE)
+                        screen.blit(texto, (width // 2 - texto.get_width() // 2, height // 2 + index * 50))
+                    elif index + 1 != self.selected_option:
+                        self.color = RED
+                        self.font_size = 20
+                        texto = self.font.render(text["name"], True, self.color)
+                        screen.blit(texto, (width // 2 - texto.get_width() // 2, height // 2 + index * 50))
+            elif key_event == "x":
+                # print(f"Opção selecionada: {self.options[self.selected_option]}")
+                self.menu = False  # Saia do menu depois de escolher
+
+    # def handle_input(self, key_event):
+    #     if key_event == "up":
+    #         if self.selected_option == 1:
+    #             self.selected_option = 3
+    #             print(self.selected_option)
+    #         else:
+    #             self.selected_option -= 1
+    #             print(self.selected_option)
+    #     elif key_event == "down":
+    #         if self.selected_option == 3:
+    #             self.selected_option = 1
+    #             print(self.selected_option)
+    #         else:
+    #             self.selected_option += 1
+    #             print(self.selected_option)
+    #     elif key_event == "x":
+    #         # print(f"Opção selecionada: {self.options[self.selected_option]}")
+    #         self.menu = False  # Saia do menu depois de escolher
+    #         return False
